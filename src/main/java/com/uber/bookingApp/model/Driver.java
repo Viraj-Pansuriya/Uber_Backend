@@ -3,7 +3,7 @@ package com.uber.bookingApp.model;
 import jakarta.persistence.*;
 import org.locationtech.jts.geom.Point;
 
-//@Entity
+@Entity
 public class Driver {
 
     @Id

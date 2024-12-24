@@ -34,9 +34,6 @@ public class RideRequest {
     @Enumerated(EnumType.STRING)
     private RideStatus rideStatus;
 
-    private Double fare;
-    private LocalDateTime startedTime;
-    private LocalDateTime endedTime;
 
 
 }

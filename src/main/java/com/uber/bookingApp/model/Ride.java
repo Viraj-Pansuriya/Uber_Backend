@@ -2,12 +2,14 @@ package com.uber.bookingApp.model;
 
 import com.uber.bookingApp.model.enums.PaymentMethod;
 import com.uber.bookingApp.model.enums.RideRequestStatus;
+import com.uber.bookingApp.model.enums.RideStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
 
+@Entity
 public class Ride {
 
     @Id
@@ -35,4 +37,11 @@ public class Ride {
 
     @Enumerated(EnumType.STRING)
     private RideRequestStatus requestStatus;
+
+    @Enumerated(EnumType.STRING)
+    private RideStatus rideStatus;
+
+    private Double fare;
+    private LocalDateTime startedTime;
+    private LocalDateTime endedTime;
 }

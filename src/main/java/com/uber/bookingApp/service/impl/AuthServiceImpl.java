@@ -4,7 +4,9 @@ import com.uber.bookingApp.dto.DriverDto;
 import com.uber.bookingApp.dto.UserDto;
 import com.uber.bookingApp.dto.auth.SIgnUpDto;
 import com.uber.bookingApp.service.AuthService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuthServiceImpl implements AuthService {
     @Override
     public String login(String username, String password) {

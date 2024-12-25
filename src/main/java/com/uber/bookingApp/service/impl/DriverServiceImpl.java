@@ -4,9 +4,11 @@ import com.uber.bookingApp.dto.DriverDto;
 import com.uber.bookingApp.dto.RideDto;
 import com.uber.bookingApp.dto.RiderDto;
 import com.uber.bookingApp.service.DriverService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class DriverServiceImpl implements DriverService {
     @Override
     public RiderDto acceptRide(Long riderId) {

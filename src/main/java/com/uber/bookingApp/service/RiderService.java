@@ -17,9 +17,11 @@ public interface RiderService {
 
     RideDto rateDriver(Long rideId, Double rating);
 
-    DriverDto getRiderProfile();
+    RiderDto getRiderProfile();
 
     List<RideDto> getAllRides();
 
     Rider createNewRider(User savedUser);
+
+    Rider getCurrentRider();
 }

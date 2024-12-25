@@ -2,20 +2,58 @@ package com.uber.bookingApp.service.impl;
 
 import com.uber.bookingApp.dto.DriverDto;
 import com.uber.bookingApp.dto.UserDto;
-import com.uber.bookingApp.dto.auth.SIgnUpDto;
+import com.uber.bookingApp.dto.auth.SignUpDto;
+import com.uber.bookingApp.exceptions.RuntimeConflictException;
+import com.uber.bookingApp.model.User;
+import com.uber.bookingApp.repository.UserRepository;
 import com.uber.bookingApp.service.AuthService;
+import com.uber.bookingApp.service.RiderService;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+
+import static com.uber.bookingApp.model.enums.Role.RIDER;
 
 @Service
 public class AuthServiceImpl implements AuthService {
+
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
+    private final RiderService riderService;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public AuthServiceImpl(UserRepository userRepository, ModelMapper modelMapper, RiderService riderService, BCryptPasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+        this.riderService = riderService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Override
     public String login(String username, String password) {
         return "";
     }
 
     @Override
-    public UserDto sighUp(SIgnUpDto sIgnUpDto) {
-        return null;
+    public UserDto signUp(SignUpDto signUpDto) {
+
+
+        boolean isAlreadyExist = userRepository.findByEmail(signUpDto.getEmail()).isPresent();
+        if(isAlreadyExist){
+           throw new RuntimeConflictException("User with Email Id " + signUpDto.getEmail() + " already exist");
+        }
+
+        User newUser = modelMapper.map(signUpDto, User.class);
+        newUser.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+        newUser.setRoles(Set.of(RIDER));
+        User savedUser = userRepository.save(newUser);
+        riderService.createNewRider(savedUser);
+        // TODO add wallet related service here
+
+        return modelMapper.map(savedUser, UserDto.class);
+
     }
 
     @Override

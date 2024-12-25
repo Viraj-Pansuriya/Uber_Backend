@@ -4,12 +4,16 @@ import com.uber.bookingApp.model.enums.PaymentMethod;
 import com.uber.bookingApp.model.enums.RideRequestStatus;
 import com.uber.bookingApp.model.enums.RideStatus;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 public class Ride {
 
     @Id
@@ -34,9 +38,6 @@ public class Ride {
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
-
-    @Enumerated(EnumType.STRING)
-    private RideRequestStatus requestStatus;
 
     @Enumerated(EnumType.STRING)
     private RideStatus rideStatus;

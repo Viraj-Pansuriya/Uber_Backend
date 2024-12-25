@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 public class RideRequestDto {
 
     private Long id;
-    private Point pickupLocation;
-    private Point dropOffLocation;
+    private PointDto pickupLocation;
+    private PointDto dropOffLocation;
     private LocalDateTime requestedTime;
     private Rider rider;
     private PaymentMethod paymentMethod;

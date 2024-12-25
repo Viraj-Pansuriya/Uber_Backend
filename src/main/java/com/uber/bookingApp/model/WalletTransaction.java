@@ -3,11 +3,15 @@ package com.uber.bookingApp.model;
 import com.uber.bookingApp.model.enums.TransactionMethod;
 import com.uber.bookingApp.model.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 public class WalletTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -35,7 +35,8 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public Ride getRideById(Long rideId) {
-        return null;
+        return rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride request not found for id : " + rideId));
     }
 
     @Override

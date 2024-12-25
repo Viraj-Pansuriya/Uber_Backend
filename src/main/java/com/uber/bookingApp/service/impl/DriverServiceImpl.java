@@ -17,6 +17,7 @@ import com.uber.bookingApp.service.DriverService;
 import com.uber.bookingApp.service.RideService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +41,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @Transactional
     public RideDto acceptRide(Long rideRequestId) {
 
         RideRequest rideRequest = rideRequestRepository.findById(rideRequestId).orElseThrow(
@@ -75,8 +77,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public RideDto startRide(Long rideId , RideStartDto rideStartDto) {
-        Ride ride = rideRepository.findById(rideId).orElseThrow(
-                () -> new RuntimeException("Ride request not found for id : " + rideId));
+        Ride ride = rideService.getRideById(rideId);
 
         Driver driver = getCurrentDriver();
 

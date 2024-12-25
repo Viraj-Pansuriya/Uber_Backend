@@ -28,6 +28,7 @@ public class MapperConfig {
                     return PointDto.builder()
                             .longitude(point.getX())
                             .latitude(point.getY())
+                            .type("Point")
                             .build();
                 }
         );

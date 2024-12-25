@@ -40,7 +40,7 @@ public class RideStrategyManager {
         if (LocalTime.now().isAfter(surgePricingStartTime) && LocalTime.now().isBefore(surgePricingEndTime)) {
             return rideFairSurgePricingFairCalculationStrategy;
         }
-        return rideFairDefaultFairCalculationStrategy;
+        return rideFairSurgePricingFairCalculationStrategy;
 
     }
 

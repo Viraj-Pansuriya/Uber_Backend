@@ -2,10 +2,14 @@ package com.uber.bookingApp.model;
 
 import com.uber.bookingApp.model.enums.Role;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "users")
 public class User {
 

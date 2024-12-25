@@ -17,11 +17,11 @@ import static com.uber.bookingApp.model.enums.PaymentStatus.CONFIRMED;
 public class CashPaymentStrategy implements PaymentStrategy {
 
     private final WalletService walletService;
-    private final PaymentService paymentService;
+    private final PaymentRepository paymentRepository;
 
-    public CashPaymentStrategy(WalletService walletService, PaymentService paymentService) {
+    public CashPaymentStrategy(WalletService walletService, PaymentRepository paymentRepository) {
         this.walletService = walletService;
-        this.paymentService = paymentService;
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -29,6 +29,7 @@ public class CashPaymentStrategy implements PaymentStrategy {
         Driver driver = payment.getRide().getDriver();
         double commission = payment.getAmount() * PLATFORM_COMMISSION;
         walletService.deductMoneyFromWallet(driver.getUser(), commission , null , payment.getRide() , TransactionMethod.RIDE);
-        paymentService.updatePaymentStatus(payment , CONFIRMED);
+        payment.setPaymentStatus(CONFIRMED);
+        paymentRepository.save(payment);
     }
 }

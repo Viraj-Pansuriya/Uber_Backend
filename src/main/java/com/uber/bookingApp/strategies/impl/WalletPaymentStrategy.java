@@ -3,25 +3,23 @@ package com.uber.bookingApp.strategies.impl;
 import com.uber.bookingApp.model.Driver;
 import com.uber.bookingApp.model.Payment;
 import com.uber.bookingApp.model.Rider;
+import com.uber.bookingApp.model.enums.PaymentStatus;
 import com.uber.bookingApp.model.enums.TransactionMethod;
-import com.uber.bookingApp.service.PaymentService;
+import com.uber.bookingApp.repository.PaymentRepository;
 import com.uber.bookingApp.service.WalletService;
 import com.uber.bookingApp.strategies.PaymentStrategy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.uber.bookingApp.model.enums.PaymentStatus.CONFIRMED;
-
 @Service
 public class WalletPaymentStrategy implements PaymentStrategy {
 
     private final WalletService walletService;
-    private final PaymentService paymentService;
+    private final PaymentRepository paymentRepository;
 
-    public WalletPaymentStrategy(WalletService walletService,
-                                 PaymentService paymentService) {
+    public WalletPaymentStrategy(WalletService walletService, PaymentRepository paymentRepository) {
         this.walletService = walletService;
-        this.paymentService = paymentService;
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -41,7 +39,8 @@ public class WalletPaymentStrategy implements PaymentStrategy {
                 driver.getUser() , driverPayment , null , payment.getRide() , TransactionMethod.RIDE
         );
 
-        paymentService.updatePaymentStatus(payment , CONFIRMED);
+        payment.setPaymentStatus(PaymentStatus.CONFIRMED);
+        paymentRepository.save(payment);
 
     }
 }

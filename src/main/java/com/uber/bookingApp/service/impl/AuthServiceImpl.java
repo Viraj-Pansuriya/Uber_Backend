@@ -8,6 +8,7 @@ import com.uber.bookingApp.model.User;
 import com.uber.bookingApp.repository.UserRepository;
 import com.uber.bookingApp.service.AuthService;
 import com.uber.bookingApp.service.RiderService;
+import com.uber.bookingApp.service.WalletService;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,14 @@ public class AuthServiceImpl implements AuthService {
     private final ModelMapper modelMapper;
     private final RiderService riderService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final WalletService walletService;
 
-    public AuthServiceImpl(UserRepository userRepository, ModelMapper modelMapper, RiderService riderService, BCryptPasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(UserRepository userRepository, ModelMapper modelMapper, RiderService riderService, BCryptPasswordEncoder passwordEncoder, WalletService walletService) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.riderService = riderService;
         this.passwordEncoder = passwordEncoder;
+        this.walletService = walletService;
     }
 
     @Override
@@ -52,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
         newUser.setRoles(Set.of(RIDER));
         User savedUser = userRepository.save(newUser);
         riderService.createNewRider(savedUser);
+        walletService.createWallet(savedUser);
         // TODO add wallet related service here
 
         return modelMapper.map(savedUser, UserDto.class);

@@ -1,15 +1,16 @@
 package com.uber.bookingApp.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Wallet {
 
     @Id
@@ -17,11 +18,12 @@ public class Wallet {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     private Double balance;
 
-    @OneToMany(mappedBy = "wallet")
+    @OneToMany(mappedBy = "wallet" , cascade = CascadeType.ALL)
     private List<WalletTransaction> transactions;
 
 

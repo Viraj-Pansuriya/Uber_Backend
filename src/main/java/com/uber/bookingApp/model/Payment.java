@@ -3,8 +3,7 @@ package com.uber.bookingApp.model;
 import com.uber.bookingApp.model.enums.PaymentMethod;
 import com.uber.bookingApp.model.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -12,6 +11,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Payment {
 
     @Id

@@ -26,6 +26,7 @@ public class Rating {
     private Rider rider;
 
     @ManyToOne
+    @JoinColumn(name = "driver_id")
     private Driver driver;
 
     private Integer driverRating; //rating for the driver

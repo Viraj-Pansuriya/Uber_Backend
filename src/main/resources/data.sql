@@ -1,5 +1,5 @@
 INSERT INTO users (user_name, email, password) VALUES
-('Aarav Sharma', 'aarav@gmail.com', 'Password'),
+('Viraj Pansuriya', 'virajpansuriya777@gmail.com', 'Password'),
 ('Vivaan Khanna', 'vivaan.khanna@example.com', '$2a$10$examplePasswordHash2'),
 ('Aditya Verma', 'aditya.verma@example.com', '$2a$10$examplePasswordHash3'),
 ('Vihaan Kapoor', 'vihaan.kapoor@example.com', '$2a$10$examplePasswordHash4'),

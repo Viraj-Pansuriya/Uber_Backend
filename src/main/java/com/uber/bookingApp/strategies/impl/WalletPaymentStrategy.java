@@ -24,7 +24,7 @@ public class WalletPaymentStrategy implements PaymentStrategy {
 
     @Override
     @Transactional
-    public void processPayment(Payment payment) {
+    public Payment processPayment(Payment payment) {
 
         Driver driver = payment.getRide().getDriver();
         Rider rider = payment.getRide().getRider();
@@ -33,14 +33,14 @@ public class WalletPaymentStrategy implements PaymentStrategy {
                 rider.getUser() , payment.getAmount() , null  , payment.getRide() , TransactionMethod.RIDE
         );
 
-        double driverPayment = payment.getAmount() * (1 - PLATFORM_COMMISSION);
+        Long driverPayment = (long) Math.ceil(payment.getAmount() * (1 - PLATFORM_COMMISSION));
 
         walletService.addMoneyToWallet(
                 driver.getUser() , driverPayment , null , payment.getRide() , TransactionMethod.RIDE
         );
 
         payment.setPaymentStatus(PaymentStatus.CONFIRMED);
-        paymentRepository.save(payment);
+        return paymentRepository.save(payment);
 
     }
 }

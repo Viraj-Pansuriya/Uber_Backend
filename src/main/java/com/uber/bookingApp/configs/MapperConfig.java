@@ -1,6 +1,8 @@
 package com.uber.bookingApp.configs;
 
+import com.uber.bookingApp.dto.PaymentDto;
 import com.uber.bookingApp.dto.PointDto;
+import com.uber.bookingApp.model.Payment;
 import com.uber.bookingApp.utils.GeometryUtils;
 import org.locationtech.jts.geom.Point;
 import org.modelmapper.ModelMapper;
@@ -31,6 +33,22 @@ public class MapperConfig {
                             .type("Point")
                             .build();
                 }
+        );
+
+        modelMapper.typeMap(Payment.class, PaymentDto.class).setConverter(
+                context-> {
+                    Payment payment = context.getSource();
+                    if(payment == null) return null;
+                    return PaymentDto.builder()
+                            .paymentMethod(payment.getPaymentMethod())
+                            .amount(payment.getAmount())
+                            .paymentTime(payment.getPaymentTime())
+                            .paymentStatus(payment.getPaymentStatus())
+                            .paymentUrl(payment.getPaymentUrl())
+                            .transactionId(payment.getTransactionId())
+                            .build();
+                }
+
         );
         return modelMapper;
     }

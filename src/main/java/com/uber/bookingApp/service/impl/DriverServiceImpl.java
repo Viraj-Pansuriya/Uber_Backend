@@ -5,6 +5,7 @@ import com.uber.bookingApp.dto.RideDto;
 import com.uber.bookingApp.dto.RideStartDto;
 import com.uber.bookingApp.exceptions.RuntimeConflictException;
 import com.uber.bookingApp.model.Driver;
+import com.uber.bookingApp.model.Payment;
 import com.uber.bookingApp.model.Ride;
 import com.uber.bookingApp.model.RideRequest;
 import com.uber.bookingApp.model.enums.RideStatus;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import static com.uber.bookingApp.model.enums.PaymentStatus.CONFIRMED;
 import static com.uber.bookingApp.model.enums.RideRequestStatus.PENDING;
 import static com.uber.bookingApp.model.enums.RideStatus.ACCEPTED;
 import static com.uber.bookingApp.model.enums.RideStatus.ONGOING;
@@ -110,9 +112,10 @@ public class DriverServiceImpl implements DriverService {
             throw new RuntimeConflictException("Invalid otp");
         }
         ride.setStartedTime(LocalDateTime.now());
-        Ride updatedRide = rideService.updateRideStatus(ride , RideStatus.ONGOING);
+        Payment payment = paymentService.createPayment(ride);
 
-        paymentService.createPayment(updatedRide);
+        ride.setPayment(payment);
+        Ride updatedRide = rideService.updateRideStatus(ride , RideStatus.ONGOING);
 
         return modelMapper.map(updatedRide, RideDto.class);
     }
@@ -123,6 +126,8 @@ public class DriverServiceImpl implements DriverService {
         Ride ride = rideService.getRideById(rideId);
         Driver driver = getCurrentDriver();
 
+        Payment payment = paymentService.getPaymentByRide(ride);
+
         if(!ride.getRideStatus().equals(ONGOING)){
             throw new RuntimeException("Ride is not in ONGOING state , can not end it.");
         }
@@ -130,10 +135,13 @@ public class DriverServiceImpl implements DriverService {
         if(!driver.equals(ride.getDriver())){
             throw new RuntimeException("Ride is not assigned to this driver");
         }
+        if(!payment.getPaymentStatus().equals(CONFIRMED)){
+            throw new RuntimeException("Payment is not confirmed , can not end ride");
+        }
         ride.setEndedTime(LocalDateTime.now());
         Ride updatedRide = rideService.updateRideStatus(ride , RideStatus.ENDED);
         updateDriverAvailability(driver , true);
-        paymentService.processPayment(ride);
+//        paymentService.processPayment(ride);
 
         // TODO : process payment service,
         return modelMapper.map(updatedRide, RideDto.class);

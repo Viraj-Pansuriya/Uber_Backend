@@ -2,6 +2,7 @@ package com.uber.bookingApp.service.impl;
 
 import com.uber.bookingApp.model.Payment;
 import com.uber.bookingApp.model.Ride;
+import com.uber.bookingApp.model.enums.PaymentMethod;
 import com.uber.bookingApp.model.enums.PaymentStatus;
 import com.uber.bookingApp.repository.PaymentRepository;
 import com.uber.bookingApp.service.PaymentService;
@@ -36,12 +37,29 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void processPayment(Ride ride) {
-        Payment payment = paymentRepository.findByRide(ride).orElseThrow(
+    public Payment processPayment(Ride ride) {
+        Payment payment = getPaymentByRide(ride);
+        return paymentStrategyManager.getPaymentStrategy(payment.getPaymentMethod()).processPayment(payment);
+    }
+
+    @Override
+    public Payment getPaymentByRide(Ride ride) {
+        return paymentRepository.findByRide(ride).orElseThrow(
                 () -> new RuntimeException("Payment not found for ride id: " + ride.getId())
         );
+    }
 
-        paymentStrategyManager.getPaymentStrategy(payment.getPaymentMethod()).processPayment(payment);
+    @Override
+    public Payment getPaymentByTransactionId(String pLinkId) {
+        return paymentRepository.findByTransactionId(pLinkId).orElseThrow(
+                () -> new RuntimeException("Payment not found for transaction id: " + pLinkId)
+        );
+    }
+
+    @Override
+    public Payment changePaymentMethod(PaymentMethod paymentMethod, Payment payment) {
+        payment.setPaymentMethod(paymentMethod);
+        return paymentRepository.save(payment);
     }
 
     @Override

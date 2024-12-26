@@ -36,7 +36,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional
-    public Wallet addMoneyToWallet(User user, Double amount, String transactionId, Ride ride, TransactionMethod transactionMethod) {
+    public Wallet addMoneyToWallet(User user, Long amount, String transactionId, Ride ride, TransactionMethod transactionMethod) {
 
         Wallet wallet = findByUser(user);
         wallet.setBalance(wallet.getBalance() + amount);
@@ -57,7 +57,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional
-    public Wallet deductMoneyFromWallet(User user, Double amount, String transactionId, Ride ride, TransactionMethod transactionMethod) {
+    public Wallet deductMoneyFromWallet(User user, Long amount, String transactionId, Ride ride, TransactionMethod transactionMethod) {
 
 
         Wallet wallet = findByUser(user);

@@ -18,7 +18,7 @@ public class WalletTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Double amount;
+    private Long amount;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;

@@ -1,7 +1,6 @@
 package com.uber.bookingApp.model;
 
 import com.uber.bookingApp.model.enums.PaymentMethod;
-import com.uber.bookingApp.model.enums.RideRequestStatus;
 import com.uber.bookingApp.model.enums.RideStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,6 +34,8 @@ public class Ride {
     @ManyToOne(fetch = FetchType.LAZY)
     private Driver driver;
 
+    @OneToOne(mappedBy = "ride")
+    private Payment payment;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
@@ -44,7 +45,7 @@ public class Ride {
 
     private String otp;
 
-    private Double fare;
+    private Long fare;
     private LocalDateTime startedTime;
     private LocalDateTime endedTime;
 }

@@ -23,10 +23,13 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     private Ride ride;
 
-    private Double amount;
+    private Long amount;
+
+    private String transactionId;
+    private String paymentUrl;
 
     @CreationTimestamp
     private LocalDateTime paymentTime;

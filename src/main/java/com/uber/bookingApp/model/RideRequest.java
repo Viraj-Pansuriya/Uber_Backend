@@ -39,7 +39,7 @@ public class RideRequest {
     @Enumerated(EnumType.STRING)
     private RideRequestStatus requestStatus;
 
-    private Double fare;
+    private Long fare;
 
 
 }

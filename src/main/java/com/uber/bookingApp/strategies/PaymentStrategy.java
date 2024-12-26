@@ -6,6 +6,6 @@ public interface PaymentStrategy {
 
     double PLATFORM_COMMISSION = 0.3;
 
-    void processPayment(Payment payment);
+    Payment processPayment(Payment payment);
 
 }

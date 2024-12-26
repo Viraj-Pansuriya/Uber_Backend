@@ -1,5 +1,6 @@
 package com.uber.bookingApp.service.impl;
 
+import com.uber.bookingApp.dto.DriverDto;
 import com.uber.bookingApp.dto.RideDto;
 import com.uber.bookingApp.dto.RideRequestDto;
 import com.uber.bookingApp.dto.RiderDto;
@@ -10,10 +11,7 @@ import com.uber.bookingApp.model.enums.PaymentStatus;
 import com.uber.bookingApp.model.enums.RideStatus;
 import com.uber.bookingApp.repository.RideRequestRepository;
 import com.uber.bookingApp.repository.RiderRepository;
-import com.uber.bookingApp.service.DriverService;
-import com.uber.bookingApp.service.PaymentService;
-import com.uber.bookingApp.service.RideService;
-import com.uber.bookingApp.service.RiderService;
+import com.uber.bookingApp.service.*;
 import com.uber.bookingApp.strategies.RideStrategyManager;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -39,10 +37,12 @@ public class RiderServiceImpl implements RiderService {
     private final ModelMapper modelMapper;
     private final RideRequestRepository rideRequestRepository;
     private final RideStrategyManager rideStrategyManager;
+    private final RatingService ratingService;
+
     public RiderServiceImpl(DriverService driverService, PaymentService paymentService, RideService rideService, RiderRepository riderRepository,
                             ModelMapper modelMapper,
                             RideRequestRepository rideRequestRepository,
-                            RideStrategyManager rideStrategyManager) {
+                            RideStrategyManager rideStrategyManager, RatingService ratingService) {
         this.driverService = driverService;
         this.paymentService = paymentService;
         this.rideService = rideService;
@@ -50,6 +50,7 @@ public class RiderServiceImpl implements RiderService {
         this.modelMapper = modelMapper;
         this.rideRequestRepository = rideRequestRepository;
         this.rideStrategyManager = rideStrategyManager;
+        this.ratingService = ratingService;
     }
 
     @Override
@@ -93,8 +94,16 @@ public class RiderServiceImpl implements RiderService {
     }
 
     @Override
-    public RideDto rateDriver(Long rideId, Double rating) {
-        return null;
+    public DriverDto rateDriver(Long rideId, Integer rating) {
+        Ride ride = rideService.getRideById(rideId);
+        Rider rider = getCurrentRider();
+
+        if(!ride.getRider().equals(rider)) {
+            throw new RuntimeException("Rider cannot rate the driver");
+        }
+
+        return ratingService.rateDriver(ride , rating);
+
     }
 
     @Override

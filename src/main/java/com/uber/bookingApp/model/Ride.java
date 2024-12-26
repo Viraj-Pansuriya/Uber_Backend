@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Table(indexes = {
+        @Index(name = "idx_ride_rider", columnList = "rider_id"),
+        @Index(name = "idx_ride_driver", columnList = "driver_id")
+})
 public class Ride {
 
     @Id
@@ -32,6 +36,7 @@ public class Ride {
     private Rider rider;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver_id")
     private Driver driver;
 
     @OneToOne(mappedBy = "ride")

@@ -1,14 +1,20 @@
 package com.uber.bookingApp.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "drivers")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "drivers",
+        indexes = {
+                @Index(name = "idx_driver_vehicle_id", columnList = "vehicleId")
+        }
+)
 public class Driver {
 
     @Id
@@ -20,7 +26,7 @@ public class Driver {
     @JoinColumn(name = "user_id")
     private User user;
     @Column(name = "rating")
-    private Double Rating;
+    private Double rating;
 
     @Column(name = "available")
     private Boolean available;

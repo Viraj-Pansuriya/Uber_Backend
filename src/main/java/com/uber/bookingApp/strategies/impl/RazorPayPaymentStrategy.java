@@ -28,7 +28,7 @@ public class RazorPayPaymentStrategy implements PaymentStrategy {
     private final String RAZORPAY_API_URL;
 
     public RazorPayPaymentStrategy(PaymentRepository paymentRepository,
-                                   @Value("${razorpay.api.url}") String razorpayApiUrl) {
+                                   @Value("${razorpay.payment.link.url}") String razorpayApiUrl) {
         this.paymentRepository = paymentRepository;
         RAZORPAY_API_URL = razorpayApiUrl;
     }

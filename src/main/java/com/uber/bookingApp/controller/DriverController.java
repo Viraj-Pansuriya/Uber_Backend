@@ -1,10 +1,12 @@
 package com.uber.bookingApp.controller;
 
 
-import com.uber.bookingApp.dto.RideDto;
-import com.uber.bookingApp.dto.RideStartDto;
+import com.uber.bookingApp.dto.*;
 import com.uber.bookingApp.service.DriverService;
 import jakarta.websocket.server.PathParam;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,5 +35,29 @@ public class DriverController {
     @PostMapping("/endRide/{rideId}")
     public ResponseEntity<RideDto> endRide(@PathVariable Long rideId) {
         return ResponseEntity.ok(driverService.endRide(rideId));
+    }
+
+    @PostMapping("/rateRider")
+    public ResponseEntity<RiderDto> rateRider(@RequestBody RatingDto ratingDto) {
+        return ResponseEntity.ok(driverService.rateRider(ratingDto.getRideId(), ratingDto.getRating()));
+
+    }
+
+    @GetMapping("/getMyProfile")
+    public ResponseEntity<DriverDto> getMyProfile() {
+        return ResponseEntity.ok(driverService.getDriverProfile());
+    }
+
+    @GetMapping("/getMyRides")
+    public ResponseEntity<Page<RideDto>> getAllMyRides(@RequestParam(defaultValue = "0") Integer pageOffset,
+                                                       @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageOffset, pageSize,
+                Sort.by(Sort.Direction.DESC, "createdTime", "id"));
+        return ResponseEntity.ok(driverService.getAllRides(pageRequest));
+    }
+
+    @PostMapping("/cancelRide/{rideId}")
+    public ResponseEntity<RideDto> cancelRide(@PathVariable Long rideId) {
+        return ResponseEntity.ok(driverService.cancelRide(rideId));
     }
 }

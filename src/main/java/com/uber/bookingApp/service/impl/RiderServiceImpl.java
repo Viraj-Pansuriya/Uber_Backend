@@ -1,19 +1,21 @@
 package com.uber.bookingApp.service.impl;
 
-import com.uber.bookingApp.dto.DriverDto;
 import com.uber.bookingApp.dto.RideDto;
 import com.uber.bookingApp.dto.RideRequestDto;
+import com.uber.bookingApp.dto.RiderDto;
+import com.uber.bookingApp.exceptions.ResourceNotFoundException;
+import com.uber.bookingApp.model.Driver;
 import com.uber.bookingApp.model.RideRequest;
 import com.uber.bookingApp.model.Rider;
 import com.uber.bookingApp.model.User;
 import com.uber.bookingApp.repository.RideRequestRepository;
 import com.uber.bookingApp.repository.RiderRepository;
 import com.uber.bookingApp.service.RiderService;
-import com.uber.bookingApp.strategies.RideFairCalculationStrategy;
-import com.uber.bookingApp.strategies.impl.DriverMatchingNearestDriverStrategy;
+import com.uber.bookingApp.strategies.RideStrategyManager;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,29 +27,34 @@ public class RiderServiceImpl implements RiderService {
 
     private final RiderRepository riderRepository;
     private final ModelMapper modelMapper;
-    private final RideFairCalculationStrategy rideFairCalculationStrategy;
-    private final DriverMatchingNearestDriverStrategy driverMatchingNearestDriverStrategy;
     private final RideRequestRepository rideRequestRepository;
-    public RiderServiceImpl(RiderRepository riderRepository, ModelMapper modelMapper, RideFairCalculationStrategy rideFairCalculationStrategy, DriverMatchingNearestDriverStrategy driverMatchingNearestDriverStrategy, RideRequestRepository rideRequestRepository) {
+    private final RideStrategyManager rideStrategyManager;
+    public RiderServiceImpl(RiderRepository riderRepository,
+                            ModelMapper modelMapper,
+                            RideRequestRepository rideRequestRepository,
+                            RideStrategyManager rideStrategyManager) {
         this.riderRepository = riderRepository;
         this.modelMapper = modelMapper;
-        this.rideFairCalculationStrategy = rideFairCalculationStrategy;
-        this.driverMatchingNearestDriverStrategy = driverMatchingNearestDriverStrategy;
         this.rideRequestRepository = rideRequestRepository;
+        this.rideStrategyManager = rideStrategyManager;
     }
 
     @Override
+    @Transactional
     public RideRequestDto requestRide(RideRequestDto rideRequestDto) {
 
+        Rider rider = getCurrentRider();
         RideRequest rideRequest = modelMapper.map(rideRequestDto, RideRequest.class);
         rideRequest.setRequestStatus(PENDING);
+        rideRequest.setRider(rider);
 
-        Double fare = rideFairCalculationStrategy.calculateFair(rideRequest);
+        Double fare = rideStrategyManager.getRideFairCalculationStrategy().calculateFair(rideRequest);
         rideRequest.setFare(fare);
 
         RideRequest savedRideRequest = rideRequestRepository.save(rideRequest);
 
-        driverMatchingNearestDriverStrategy.findMatchingDrivers(rideRequest);
+        // TODO : Notify drivers about ride request
+        List< Driver > matchedDrivers =  rideStrategyManager.getDriverMatchingStrategy(rider.getRating()).findMatchingDrivers(rideRequest);
 
         return modelMapper.map(savedRideRequest, RideRequestDto.class);
     }
@@ -63,7 +70,7 @@ public class RiderServiceImpl implements RiderService {
     }
 
     @Override
-    public DriverDto getRiderProfile() {
+    public RiderDto getRiderProfile() {
         return null;
     }
 
@@ -80,5 +87,15 @@ public class RiderServiceImpl implements RiderService {
                 .Rating(0.0)
                 .build();
         return riderRepository.save(rider);
+    }
+
+    @Override
+    public Rider getCurrentRider() {
+
+        return riderRepository.findById(1L).orElseThrow( () ->
+                new ResourceNotFoundException("Rider not found with id 1")
+        );
+
+        // TODO : have to extract this profile from spring security
     }
 }

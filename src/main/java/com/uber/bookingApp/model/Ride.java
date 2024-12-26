@@ -1,7 +1,6 @@
 package com.uber.bookingApp.model;
 
 import com.uber.bookingApp.model.enums.PaymentMethod;
-import com.uber.bookingApp.model.enums.RideRequestStatus;
 import com.uber.bookingApp.model.enums.RideStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -14,6 +13,10 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Table(indexes = {
+        @Index(name = "idx_ride_rider", columnList = "rider_id"),
+        @Index(name = "idx_ride_driver", columnList = "driver_id")
+})
 public class Ride {
 
     @Id
@@ -33,8 +36,11 @@ public class Ride {
     private Rider rider;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver_id")
     private Driver driver;
 
+    @OneToOne(mappedBy = "ride")
+    private Payment payment;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
@@ -44,7 +50,7 @@ public class Ride {
 
     private String otp;
 
-    private Double fare;
+    private Long fare;
     private LocalDateTime startedTime;
     private LocalDateTime endedTime;
 }

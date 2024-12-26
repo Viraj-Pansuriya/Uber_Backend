@@ -4,9 +4,11 @@ import com.uber.bookingApp.dto.DriverDto;
 import com.uber.bookingApp.dto.UserDto;
 import com.uber.bookingApp.dto.auth.SignUpDto;
 import com.uber.bookingApp.exceptions.RuntimeConflictException;
+import com.uber.bookingApp.model.Driver;
 import com.uber.bookingApp.model.User;
 import com.uber.bookingApp.repository.UserRepository;
 import com.uber.bookingApp.service.AuthService;
+import com.uber.bookingApp.service.DriverService;
 import com.uber.bookingApp.service.RiderService;
 import com.uber.bookingApp.service.WalletService;
 import org.modelmapper.ModelMapper;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
+import static com.uber.bookingApp.model.enums.Role.DRIVER;
 import static com.uber.bookingApp.model.enums.Role.RIDER;
 
 @Service
@@ -26,13 +29,15 @@ public class AuthServiceImpl implements AuthService {
     private final RiderService riderService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final WalletService walletService;
+    private final DriverService driverService;
 
-    public AuthServiceImpl(UserRepository userRepository, ModelMapper modelMapper, RiderService riderService, BCryptPasswordEncoder passwordEncoder, WalletService walletService) {
+    public AuthServiceImpl(UserRepository userRepository, ModelMapper modelMapper, RiderService riderService, BCryptPasswordEncoder passwordEncoder, WalletService walletService, DriverService driverService) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.riderService = riderService;
         this.passwordEncoder = passwordEncoder;
         this.walletService = walletService;
+        this.driverService = driverService;
     }
 
     @Override
@@ -63,7 +68,26 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public DriverDto onboardNewDriver(Long userId) {
-        return null;
+    public DriverDto onboardNewDriver(Long userId , String vehicleId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(user.getRoles().contains(DRIVER)){
+            throw new RuntimeConflictException("User is already a driver");
+        }
+
+
+        Driver createDriver = Driver.builder()
+                .user(user)
+                .rating(0.0)
+                .vehicleId(vehicleId)
+                .available(true)
+                .build();
+        user.getRoles().add(DRIVER);
+        userRepository.save(user);
+
+        Driver savedDriver = driverService.createNewDriver(createDriver);
+        return modelMapper.map(savedDriver, DriverDto.class);
     }
 }

@@ -13,11 +13,11 @@ public interface WalletService {
 
     Wallet findWalletById(Long walletId);
 
-    Wallet addMoneyToWallet(User user, Double amount,
+    Wallet addMoneyToWallet(User user, Long amount,
                             String transactionId, Ride ride,
                             TransactionMethod transactionMethod);
 
-    Wallet deductMoneyFromWallet(User user, Double amount,
+    Wallet deductMoneyFromWallet(User user, Long amount,
                                  String transactionId, Ride ride,
                                  TransactionMethod transactionMethod);
 }

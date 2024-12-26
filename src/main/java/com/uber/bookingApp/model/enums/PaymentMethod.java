@@ -2,5 +2,6 @@ package com.uber.bookingApp.model.enums;
 
 public enum PaymentMethod {
     CASH,
-    WALLET
+    WALLET,
+    RAZOR_PAY
 }

@@ -25,11 +25,11 @@ public class CashPaymentStrategy implements PaymentStrategy {
     }
 
     @Override
-    public void processPayment(Payment payment) {
+    public Payment processPayment(Payment payment) {
         Driver driver = payment.getRide().getDriver();
-        double commission = payment.getAmount() * PLATFORM_COMMISSION;
+        Long commission = (long)Math.ceil(payment.getAmount() * PLATFORM_COMMISSION);
         walletService.deductMoneyFromWallet(driver.getUser(), commission , null , payment.getRide() , TransactionMethod.RIDE);
         payment.setPaymentStatus(CONFIRMED);
-        paymentRepository.save(payment);
+        return paymentRepository.save(payment);
     }
 }

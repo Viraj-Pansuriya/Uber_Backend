@@ -3,15 +3,15 @@ package com.uber.bookingApp.service.impl;
 import com.uber.bookingApp.dto.DriverDto;
 import com.uber.bookingApp.dto.RideDto;
 import com.uber.bookingApp.dto.RideStartDto;
+import com.uber.bookingApp.dto.RiderDto;
 import com.uber.bookingApp.exceptions.RuntimeConflictException;
-import com.uber.bookingApp.model.Driver;
-import com.uber.bookingApp.model.Ride;
-import com.uber.bookingApp.model.RideRequest;
+import com.uber.bookingApp.model.*;
 import com.uber.bookingApp.model.enums.RideStatus;
 import com.uber.bookingApp.repository.DriverRepository;
 import com.uber.bookingApp.repository.RideRequestRepository;
 import com.uber.bookingApp.service.DriverService;
 import com.uber.bookingApp.service.PaymentService;
+import com.uber.bookingApp.service.RatingService;
 import com.uber.bookingApp.service.RideService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import static com.uber.bookingApp.model.enums.PaymentStatus.CONFIRMED;
 import static com.uber.bookingApp.model.enums.RideRequestStatus.PENDING;
 import static com.uber.bookingApp.model.enums.RideStatus.ACCEPTED;
 import static com.uber.bookingApp.model.enums.RideStatus.ONGOING;
@@ -32,15 +33,17 @@ public class DriverServiceImpl implements DriverService {
     private final RideService rideService;
     private final ModelMapper modelMapper;
     private final PaymentService paymentService;
+    private final RatingService ratingService;
     public DriverServiceImpl(RideRequestRepository rideRequestRepository,
                              DriverRepository driverRepository,
                              RideService rideService,
-                             ModelMapper modelMapper, PaymentService paymentService) {
+                             ModelMapper modelMapper, PaymentService paymentService, RatingService ratingService) {
         this.rideRequestRepository = rideRequestRepository;
         this.driverRepository = driverRepository;
         this.rideService = rideService;
         this.modelMapper = modelMapper;
         this.paymentService = paymentService;
+        this.ratingService = ratingService;
     }
 
     @Override
@@ -110,10 +113,12 @@ public class DriverServiceImpl implements DriverService {
             throw new RuntimeConflictException("Invalid otp");
         }
         ride.setStartedTime(LocalDateTime.now());
+        Payment payment = paymentService.createPayment(ride);
+
+
+        ride.setPayment(payment);
         Ride updatedRide = rideService.updateRideStatus(ride , RideStatus.ONGOING);
-
-        paymentService.createPayment(updatedRide);
-
+        ratingService.createNewRating(updatedRide);
         return modelMapper.map(updatedRide, RideDto.class);
     }
 
@@ -123,6 +128,8 @@ public class DriverServiceImpl implements DriverService {
         Ride ride = rideService.getRideById(rideId);
         Driver driver = getCurrentDriver();
 
+        Payment payment = paymentService.getPaymentByRide(ride);
+
         if(!ride.getRideStatus().equals(ONGOING)){
             throw new RuntimeException("Ride is not in ONGOING state , can not end it.");
         }
@@ -130,10 +137,13 @@ public class DriverServiceImpl implements DriverService {
         if(!driver.equals(ride.getDriver())){
             throw new RuntimeException("Ride is not assigned to this driver");
         }
+        if(!payment.getPaymentStatus().equals(CONFIRMED)){
+            throw new RuntimeException("Payment is not confirmed , can not end ride");
+        }
         ride.setEndedTime(LocalDateTime.now());
         Ride updatedRide = rideService.updateRideStatus(ride , RideStatus.ENDED);
         updateDriverAvailability(driver , true);
-        paymentService.processPayment(ride);
+//        paymentService.processPayment(ride);
 
         // TODO : process payment service,
         return modelMapper.map(updatedRide, RideDto.class);
@@ -146,8 +156,24 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public RideDto rateRider(Long rideId, Double rating) {
-        return null;
+    public Driver createNewDriver(Driver createDriver) {
+        return driverRepository.save(createDriver);
+    }
+
+    @Override
+    public RiderDto rateRider(Long rideId, Integer rating) {
+        Ride ride = rideService.getRideById(rideId);
+        Driver driver = getCurrentDriver();
+
+        if(!driver.equals(ride.getDriver())){
+            throw new RuntimeException("Rider cannot rate the driver");
+        }
+
+        if(!ride.getRideStatus().equals(RideStatus.ENDED)) {
+            throw new RuntimeException("Ride status is not Ended hence cannot start rating, status: "+ride.getRideStatus());
+        }
+
+        return ratingService.rateRider(ride , rating);
     }
 
     @Override

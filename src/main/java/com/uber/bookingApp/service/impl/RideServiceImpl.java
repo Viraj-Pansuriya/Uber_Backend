@@ -43,6 +43,7 @@ public class RideServiceImpl implements RideService {
         Ride ride = modelMapper.map(rideRequest , Ride.class);
         ride.setDriver(driver);
         ride.setOtp(generateRandomOTP());
+        ride.setPayment(null);
         ride.setId(null);
         rideRequestService.update(rideRequest);
         return rideRepository.save(ride);

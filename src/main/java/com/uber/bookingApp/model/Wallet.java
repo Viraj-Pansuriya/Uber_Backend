@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -24,7 +23,7 @@ public class Wallet {
 
     private Double balance;
 
-    @OneToMany(mappedBy = "wallet")
+    @OneToMany(mappedBy = "wallet" , cascade = CascadeType.ALL)
     private List<WalletTransaction> transactions;
 
 

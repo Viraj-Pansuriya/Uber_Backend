@@ -11,6 +11,7 @@ import com.uber.bookingApp.repository.WalletRepository;
 import com.uber.bookingApp.service.WalletService;
 import com.uber.bookingApp.service.WalletTransactionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class WalletServiceImpl implements WalletService {
@@ -34,6 +35,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @Transactional
     public Wallet addMoneyToWallet(User user, Double amount, String transactionId, Ride ride, TransactionMethod transactionMethod) {
 
         Wallet wallet = findByUser(user);
@@ -48,11 +50,13 @@ public class WalletServiceImpl implements WalletService {
                 .wallet(wallet)
                 .build();
 
-        walletTransactionService.createWalletTransaction(walletTransaction);
+        wallet.getTransactions().add(walletTransaction);
+//        walletTransactionService.createWalletTransaction(walletTransaction);
         return walletRepository.save(wallet);
     }
 
     @Override
+    @Transactional
     public Wallet deductMoneyFromWallet(User user, Double amount, String transactionId, Ride ride, TransactionMethod transactionMethod) {
 
 
@@ -68,7 +72,8 @@ public class WalletServiceImpl implements WalletService {
                 .wallet(wallet)
                 .build();
 
-        walletTransactionService.createWalletTransaction(walletTransaction);
+        wallet.getTransactions().add(walletTransaction);
+//        walletTransactionService.createWalletTransaction(walletTransaction);
         return walletRepository.save(wallet);
 
     }

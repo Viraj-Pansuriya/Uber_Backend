@@ -1,11 +1,9 @@
 package com.uber.bookingApp.service.impl;
 
-import com.uber.bookingApp.dto.DriverDto;
-import com.uber.bookingApp.dto.RideRequestDto;
 import com.uber.bookingApp.model.Driver;
 import com.uber.bookingApp.model.Ride;
 import com.uber.bookingApp.model.RideRequest;
-import com.uber.bookingApp.model.enums.RideRequestStatus;
+import com.uber.bookingApp.model.Rider;
 import com.uber.bookingApp.model.enums.RideStatus;
 import com.uber.bookingApp.repository.RideRepository;
 import com.uber.bookingApp.service.RideRequestService;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
-import static com.uber.bookingApp.model.enums.PaymentStatus.CONFIRMED;
 import static com.uber.bookingApp.model.enums.RideRequestStatus.ACCEPTED;
 
 @Service
@@ -39,10 +36,6 @@ public class RideServiceImpl implements RideService {
                 .orElseThrow(() -> new RuntimeException("Ride request not found for id : " + rideId));
     }
 
-    @Override
-    public void matchWithDriver(RideRequestDto rideRequestDto) {
-
-    }
 
     @Override
     public Ride createRide(RideRequest rideRequest, Driver driver) {
@@ -69,12 +62,12 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public Page<Ride> getAllRidesOfRider(Long riderId, PageRequest pageRequest) {
-        return null;
+    public Page<Ride> getAllRidesOfRider(Rider rider, PageRequest pageRequest) {
+        return rideRepository.findByRider(rider , pageRequest);
     }
 
     @Override
-    public Page<Ride> getAllRidesOfDriver(Long driverId, PageRequest pageRequest) {
-        return null;
+    public Page<Ride> getAllRidesOfDriver(Driver driver, PageRequest pageRequest) {
+        return rideRepository.findByDriver(driver , pageRequest);
     }
 }

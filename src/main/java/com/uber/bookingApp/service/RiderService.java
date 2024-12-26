@@ -1,13 +1,12 @@
 package com.uber.bookingApp.service;
 
-import com.uber.bookingApp.dto.DriverDto;
 import com.uber.bookingApp.dto.RideDto;
 import com.uber.bookingApp.dto.RideRequestDto;
 import com.uber.bookingApp.dto.RiderDto;
 import com.uber.bookingApp.model.Rider;
 import com.uber.bookingApp.model.User;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 public interface RiderService {
 
@@ -19,7 +18,7 @@ public interface RiderService {
 
     RiderDto getRiderProfile();
 
-    List<RideDto> getAllRides();
+    Page<RideDto> getAllRides(PageRequest pageRequest);
 
     Rider createNewRider(User savedUser);
 

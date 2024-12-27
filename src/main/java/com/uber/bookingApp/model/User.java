@@ -29,6 +29,9 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "contact_number")
+    private String contactNumber;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)

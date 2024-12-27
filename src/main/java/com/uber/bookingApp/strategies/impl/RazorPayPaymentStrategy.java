@@ -75,6 +75,7 @@ public class RazorPayPaymentStrategy implements PaymentStrategy {
                 builder()
                 .name(payment.getRide().getRider().getUser().getName())
                 .email(payment.getRide().getRider().getUser().getEmail())
+                .contact(payment.getRide().getRider().getUser().getContactNumber())
                 .build();
 
         return RazorPayPaymentReqDto.builder()

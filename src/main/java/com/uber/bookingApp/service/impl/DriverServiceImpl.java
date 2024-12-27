@@ -9,10 +9,7 @@ import com.uber.bookingApp.model.*;
 import com.uber.bookingApp.model.enums.RideStatus;
 import com.uber.bookingApp.repository.DriverRepository;
 import com.uber.bookingApp.repository.RideRequestRepository;
-import com.uber.bookingApp.service.DriverService;
-import com.uber.bookingApp.service.PaymentService;
-import com.uber.bookingApp.service.RatingService;
-import com.uber.bookingApp.service.RideService;
+import com.uber.bookingApp.service.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,16 +31,18 @@ public class DriverServiceImpl implements DriverService {
     private final ModelMapper modelMapper;
     private final PaymentService paymentService;
     private final RatingService ratingService;
+    private final NotificationService notificationService;
     public DriverServiceImpl(RideRequestRepository rideRequestRepository,
                              DriverRepository driverRepository,
                              RideService rideService,
-                             ModelMapper modelMapper, PaymentService paymentService, RatingService ratingService) {
+                             ModelMapper modelMapper, PaymentService paymentService, RatingService ratingService, NotificationService notificationService) {
         this.rideRequestRepository = rideRequestRepository;
         this.driverRepository = driverRepository;
         this.rideService = rideService;
         this.modelMapper = modelMapper;
         this.paymentService = paymentService;
         this.ratingService = ratingService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -65,7 +64,12 @@ public class DriverServiceImpl implements DriverService {
 
         Driver savedDriver = updateDriverAvailability(currentDriver, false);
         Ride ride = rideService.createRide(rideRequest , savedDriver);
-        return modelMapper.map(ride, RideDto.class);
+        RideDto rideDto = modelMapper.map(ride, RideDto.class);
+
+        notificationService.sendNotification(ride);
+
+        // make async call for email and sms to user.
+        return rideDto;
     }
 
     private Driver getCurrentDriver() {

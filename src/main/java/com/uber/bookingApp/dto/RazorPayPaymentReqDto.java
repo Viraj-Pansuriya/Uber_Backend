@@ -29,6 +29,7 @@ public class RazorPayPaymentReqDto {
     public static class Customer {
         private String name;
         private String email;
+        private String contact;
     }
 
     // Nested DTO for Notify
@@ -40,5 +41,6 @@ public class RazorPayPaymentReqDto {
     @ToString
     public static class Notify {
         private Boolean email = true;
+        private Boolean sms = true;
     }
 }

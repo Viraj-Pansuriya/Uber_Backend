@@ -155,7 +155,7 @@ public class RiderServiceImpl implements RiderService {
             throw new RuntimeException("Payment can not be initialized in ride status : "+ride.getRideStatus());
         }
 
-        if(ride.getPayment().getPaymentStatus().equals(PaymentStatus.PENDING)){
+        if(!ride.getPayment().getPaymentStatus().equals(PaymentStatus.PENDING)){
             throw new RuntimeException("Payment can not be initialized in payment status : "+ride.getPayment().getPaymentStatus());
         }
 

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -137,9 +138,11 @@ public class RiderServiceImpl implements RiderService {
     @Override
     public Rider getCurrentRider() {
 
-        return riderRepository.findById(1L).orElseThrow( () ->
-                new ResourceNotFoundException("Rider not found with id 1")
-        );
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return riderRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException(
+                "Rider not associated with user with id: "+user.getId()
+        ));
 
         // TODO : have to extract this profile from spring security
     }
@@ -149,6 +152,11 @@ public class RiderServiceImpl implements RiderService {
 
         // TODO : validation for current rider
         Ride ride = rideService.getRideById(rideId);
+        Rider rider = getCurrentRider();
+
+        if(!rider.equals(ride.getRider())) {
+            throw new RuntimeException(("Rider does not own this ride with id: "+rideId));
+        }
 
 
         if(!ride.getRideStatus().equals(ONGOING)){

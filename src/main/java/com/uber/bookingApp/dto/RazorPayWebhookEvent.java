@@ -29,6 +29,7 @@ public class RazorPayWebhookEvent {
     @Data
     @NoArgsConstructor
     @ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Payload {
 
         private Order order;
@@ -40,6 +41,7 @@ public class RazorPayWebhookEvent {
     @Data
     @NoArgsConstructor
     @ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Order {
 
         private Entity entity;
@@ -48,6 +50,7 @@ public class RazorPayWebhookEvent {
     @Data
     @NoArgsConstructor
     @ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Payment {
 
         private Entity entity;
@@ -56,6 +59,7 @@ public class RazorPayWebhookEvent {
     @Data
     @NoArgsConstructor
     @ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PaymentLink {
 
         private Entity entity;
@@ -63,16 +67,18 @@ public class RazorPayWebhookEvent {
         @Data
         @NoArgsConstructor
         @ToString
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Customer {
 
             private String email;
-
+            private String contact;
             private String name;
         }
 
         @Data
         @NoArgsConstructor
         @ToString
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Notify {
 
             private boolean email;
@@ -83,6 +89,7 @@ public class RazorPayWebhookEvent {
         @Data
         @NoArgsConstructor
         @ToString
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Reminders {
 
             private String status;

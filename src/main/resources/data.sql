@@ -1,6 +1,6 @@
 INSERT INTO users (user_name, email, password, contact_number) VALUES
-                                                                   ('Viraj Pansuriya', 'virajpansuriya777@gmail.com', 'Password', '9016527877'),
-                                                                   ('Vivaan Khanna', 'vivaan.khanna@example.com', '$2a$10$examplePasswordHash2', '9876543211'),
+                                                                   ('Viraj Pansuriya', 'virajpansuriya777@gmail.com', '$2a$10$N.wPIaMvWT7GhGKyFkFIWOt/q0koANAx8iwVvbiWeepTYuD4D/DxW', '9016527877'),
+                                                                   ('Vivaan Khanna', 'vivaan.khanna@example.com', '$2a$10$77OtA1SvpwcCjjThUJ3L9Oc7pWyVrUYY6.NqfT9EMn93ZBGGB2vTC', '9876543211'),
                                                                    ('Aditya Verma', 'aditya.verma@example.com', '$2a$10$examplePasswordHash3', '9876543212'),
                                                                    ('Vihaan Kapoor', 'vihaan.kapoor@example.com', '$2a$10$examplePasswordHash4', '9876543213'),
                                                                    ('Arjun Patel', 'arjun.patel@example.com', '$2a$10$examplePasswordHash5', '9876543214'),

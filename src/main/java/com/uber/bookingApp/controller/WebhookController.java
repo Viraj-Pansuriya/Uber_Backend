@@ -17,8 +17,9 @@ public class WebhookController {
 
     private final RazorpayService razorpayService;
 
-    @PostMapping("razorpay")
+    @PostMapping("/razorpay")
     public void processWebhook(@RequestBody String payload) {
+        log.info("Webhook Payload : {}", payload);
         razorpayService.processWebhook(payload);
     }
 }

@@ -1,0 +1,16 @@
+{
+  "templates": {
+    "ACCEPT_RIDE": {
+      "subject": "Your Ride Awaits! Confirm with OTP 🚖",
+      "htmlContent": "<html><body><p>Hi <b>{{riderName}}</b>,</p><p>Your ride with <b>{{appName}}</b> is confirmed! 🚖</p><p><b>🚗 Driver's Name:</b> {{driverName}}</p><p><b>📞 Driver's Contact:</b> {{driverPhone}}</p><p><b>🔑 Your OTP for ride confirmation is:</b> <b>{{otp}}</b></p><p>Safe travels! 🛣️<br>{{appName}} Team</p></body></html>"
+    },
+    "CANCEL_RIDE": {
+    "subject": "Your Ride Has Been Cancelled 🚫",
+    "htmlContent": "<html><body><p>Hi <b>{{riderName}}</b>,</p><p>We regret to inform you that your ride with <b>{{appName}}</b> has been cancelled. 🚫</p><p>It seems that your driver, <b>{{driverName}}</b>, has ended the ride due to unforeseen circumstances. Please accept our apologies for the inconvenience. 😔</p><p>For any assistance, please contact us via the app. 📲💬</p><p>We understand this may be frustrating, and we truly appreciate your patience. 🙏<br>{{appName}} Team</p></body></html>"
+    },
+    "ENDED_RIDE": {
+      "subject": "Your Ride with {{driverName}} Has Ended 🚘",
+      "htmlContent": "<html><body><p>Hi <b>{{riderName}}</b>,</p><p>We hope you had a pleasant experience during your ride with <b>{{appName}}</b>. 🚗</p><p>Your ride with <b>{{driverName}}</b> has successfully ended. We trust that your driver provided excellent service and ensured a comfortable journey. 🌟</p><p>We sincerely hope that the facilities and services met your expectations. If you have any feedback or questions, please don't hesitate to reach out to us.</p><p>Thank you for choosing {{appName}}. We look forward to serving you again soon! 🙏</p><p>Safe travels! 🛣️<br>{{appName}} Team</p></body></html>"
+    }
+  }
+}

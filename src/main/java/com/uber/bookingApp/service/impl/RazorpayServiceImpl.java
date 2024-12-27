@@ -36,7 +36,6 @@ public class RazorpayServiceImpl implements RazorpayService {
             Payment payment = paymentService.getPaymentByTransactionId(p_link_id);
             paymentService.updatePaymentStatus(payment,CONFIRMED);
         }
-
         log.info("Webhook Payload : {}", payload);
     }
 

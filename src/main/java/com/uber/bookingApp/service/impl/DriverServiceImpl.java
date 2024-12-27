@@ -4,6 +4,7 @@ import com.uber.bookingApp.dto.DriverDto;
 import com.uber.bookingApp.dto.RideDto;
 import com.uber.bookingApp.dto.RideStartDto;
 import com.uber.bookingApp.dto.RiderDto;
+import com.uber.bookingApp.exceptions.ResourceNotFoundException;
 import com.uber.bookingApp.exceptions.RuntimeConflictException;
 import com.uber.bookingApp.model.*;
 import com.uber.bookingApp.model.enums.RideStatus;
@@ -13,11 +14,13 @@ import com.uber.bookingApp.service.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import static com.uber.bookingApp.model.enums.NotificationType.*;
 import static com.uber.bookingApp.model.enums.PaymentStatus.CONFIRMED;
 import static com.uber.bookingApp.model.enums.RideRequestStatus.PENDING;
 import static com.uber.bookingApp.model.enums.RideStatus.ACCEPTED;
@@ -32,10 +35,11 @@ public class DriverServiceImpl implements DriverService {
     private final PaymentService paymentService;
     private final RatingService ratingService;
     private final NotificationService notificationService;
+    private final RazorpayService razorpayService;
     public DriverServiceImpl(RideRequestRepository rideRequestRepository,
                              DriverRepository driverRepository,
                              RideService rideService,
-                             ModelMapper modelMapper, PaymentService paymentService, RatingService ratingService, NotificationService notificationService) {
+                             ModelMapper modelMapper, PaymentService paymentService, RatingService ratingService, NotificationService notificationService, RazorpayService razorpayService) {
         this.rideRequestRepository = rideRequestRepository;
         this.driverRepository = driverRepository;
         this.rideService = rideService;
@@ -43,6 +47,7 @@ public class DriverServiceImpl implements DriverService {
         this.paymentService = paymentService;
         this.ratingService = ratingService;
         this.notificationService = notificationService;
+        this.razorpayService = razorpayService;
     }
 
     @Override
@@ -66,7 +71,7 @@ public class DriverServiceImpl implements DriverService {
         Ride ride = rideService.createRide(rideRequest , savedDriver);
         RideDto rideDto = modelMapper.map(ride, RideDto.class);
 
-        notificationService.sendNotification(ride);
+        notificationService.sendNotification(ride, ACCEPT_RIDE);
 
         // make async call for email and sms to user.
         return rideDto;
@@ -76,8 +81,11 @@ public class DriverServiceImpl implements DriverService {
 
         // TODO : get profile from spring security
 
-        return driverRepository.findById(2L).orElseThrow(() -> new RuntimeException("Driver not found"));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        return driverRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver not associated with user with " +
+                        "id "+user.getId()));
     }
 
     @Override
@@ -95,6 +103,9 @@ public class DriverServiceImpl implements DriverService {
 
         rideService.updateRideStatus(ride, RideStatus.REJECTED);
         updateDriverAvailability(driver, true);
+
+        notificationService.sendNotification(ride , CANCEL_RIDE);
+
 
         return modelMapper.map(ride, RideDto.class);
     }
@@ -149,6 +160,7 @@ public class DriverServiceImpl implements DriverService {
         updateDriverAvailability(driver , true);
 //        paymentService.processPayment(ride);
 
+        notificationService.sendNotification(ride , ENDED_RIDE);
         // TODO : process payment service,
         return modelMapper.map(updatedRide, RideDto.class);
     }

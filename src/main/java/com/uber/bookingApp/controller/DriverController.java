@@ -3,15 +3,16 @@ package com.uber.bookingApp.controller;
 
 import com.uber.bookingApp.dto.*;
 import com.uber.bookingApp.service.DriverService;
-import jakarta.websocket.server.PathParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/driver")
+@Secured("ROLE_DRIVER")
 public class DriverController {
 
 

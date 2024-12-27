@@ -1,7 +1,9 @@
 package com.uber.bookingApp.service.impl;
 
 import com.uber.bookingApp.model.Ride;
+import com.uber.bookingApp.model.enums.NotificationType;
 import com.uber.bookingApp.service.EmailService;
+import com.uber.bookingApp.service.EmailTemplateService;
 import com.uber.bookingApp.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -12,14 +14,17 @@ import org.springframework.stereotype.Service;
 public class NotificationServiceImpl implements NotificationService {
 
     private final EmailService emailService;
+    private final EmailTemplateService emailTemplateService;
 
-    public NotificationServiceImpl(EmailService emailService) {
+
+    public NotificationServiceImpl(EmailService emailService, EmailTemplateService emailTemplateService) {
         this.emailService = emailService;
+        this.emailTemplateService = emailTemplateService;
     }
 
     @Async
     @Override
-    public void sendNotification(Ride ride) {
+    public void sendNotification(Ride ride , NotificationType notificationType) {
 
         String riderName = ride.getRider().getUser().getName();
         String appName = "BindaasRide";
@@ -27,25 +32,18 @@ public class NotificationServiceImpl implements NotificationService {
         String driverPhone = ride.getDriver().getUser().getContactNumber();
         String otp = ride.getOtp();
 
-        String subject = "Your Ride Awaits! Confirm with OTP 🚖";
+        String subject = emailTemplateService.getSubject(notificationType.name());
+        String htmlContent = emailTemplateService.getHtmlContent(notificationType.name());
 
-        String htmlContent = "<html><body>"
-                + "<p>Hi <b>" + riderName + "</b>,</p>"
-                + "<p>Your ride with <b>" + appName + "</b> is confirmed! 🚖</p>"
-                + "<p>Here's your ride confirmation:</p>"
+        subject = subject
+                .replace("{{driverName}}", driverName);
 
-                // Driver Info with emojis and bold labels
-                + "<p><b>🚗 Driver's Name:</b> " + driverName + "</p>"
-                + "<p><b>📞 Driver's Contact:</b> " + driverPhone + "</p>"
-
-                // OTP with emoji
-                + "<p><b>🔑 Your OTP for ride confirmation is:</b> <b>" + otp + "</b></p>"
-
-                // Additional message
-                + "<p>If you need any assistance, feel free to contact us via the app. 📲</p>"
-                + "<p>Safe travels! 🛣️<br>" + appName + " Team</p>"
-
-                + "</body></html>";
+        htmlContent = htmlContent
+                .replace("{{riderName}}", riderName)
+                .replace("{{appName}}", appName)
+                .replace("{{otp}}" , otp)
+                .replace("{{driverName}}", driverName)
+                .replace("{{driverPhone}}", driverPhone);
 
         String receiver = ride.getRider().getUser().getEmail();
         try{

@@ -26,7 +26,7 @@ public class EmailTemplateService {
 
     public EmailTemplateConfig loadEmailTemplates() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        emailTemplateConfig = objectMapper.readValue(resource.getFile(), EmailTemplateConfig.class);
+        emailTemplateConfig = objectMapper.readValue(resource.getInputStream(), EmailTemplateConfig.class);
         return emailTemplateConfig;
     }
 

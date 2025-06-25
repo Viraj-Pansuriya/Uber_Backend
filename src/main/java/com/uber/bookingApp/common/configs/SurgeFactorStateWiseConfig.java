@@ -11,7 +11,7 @@ import java.util.List;
 
 @Configuration
 @ConfigurationProperties(prefix = "surge.factor")
-@PropertySource("file:/Users/viraj.pansuriya/projects/personalization/personal_projects/Uber_Backend/src/main/java/com/uber/bookingApp/common/configs/surge-factor-state-wise.properties")
+@PropertySource("classpath:surge-factor-state-wise.properties")
 @Getter
 @Setter
 public class SurgeFactorStateWiseConfig {

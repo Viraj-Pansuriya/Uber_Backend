@@ -7,6 +7,7 @@ import com.uber.bookingApp.dto.RiderDto;
 import com.uber.bookingApp.exceptions.ResourceNotFoundException;
 import com.uber.bookingApp.exceptions.RuntimeConflictException;
 import com.uber.bookingApp.model.*;
+import com.uber.bookingApp.model.enums.RideRequestStatus;
 import com.uber.bookingApp.model.enums.RideStatus;
 import com.uber.bookingApp.repository.DriverRepository;
 import com.uber.bookingApp.repository.RideRequestRepository;
@@ -67,14 +68,21 @@ public class DriverServiceImpl implements DriverService {
             throw new RuntimeConflictException("Driver is not available");
         }
 
-        Driver savedDriver = updateDriverAvailability(currentDriver, false);
-        Ride ride = rideService.createRide(rideRequest , savedDriver);
-        RideDto rideDto = modelMapper.map(ride, RideDto.class);
+        synchronized (this) {
 
-        notificationService.sendNotification(ride, ACCEPT_RIDE);
+            if(rideRequest.getRequestStatus().equals(RideRequestStatus.ACCEPTED))
+                throw new RuntimeConflictException("Ride request is already accepted");
+            Driver savedDriver = updateDriverAvailability(currentDriver, false);
+            Ride ride = rideService.createRide(rideRequest , savedDriver);
+            RideDto rideDto = modelMapper.map(ride, RideDto.class);
 
-        // make async call for email and sms to user.
-        return rideDto;
+            notificationService.sendNotification(ride, ACCEPT_RIDE);
+
+            // make async call for email and sms to user.
+            return rideDto;
+
+        }
+
     }
 
     private Driver getCurrentDriver() {

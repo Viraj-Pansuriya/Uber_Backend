@@ -11,7 +11,7 @@ import java.util.List;
 
 @Configuration
 @ConfigurationProperties(prefix = "surge.factor")
-@PropertySource("classpath:configs/surge-factor-state-wise.properties")
+@PropertySource("classpath:surge-factor-state-wise.properties")
 @Getter
 @Setter
 public class SurgeFactorStateWiseConfig {
